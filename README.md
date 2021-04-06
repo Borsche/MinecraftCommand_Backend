@@ -9,7 +9,7 @@ it should look like this
     host: 'ip',
     port: port,
     password: 'password'
-}```
+}```  
 
   
 Take a look at example.settings.json for an example
