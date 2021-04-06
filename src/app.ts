@@ -13,7 +13,8 @@ mcCommander.connect(settings);
 app.post('/spawnenemy', (req, res) => {
     const request = req.body as Request;
     mcCommander.spawnEnemy(request.payload as SpawnEnemyRequest);
-    mcCommander.say(eventtext.spawnenemy)
+    const text = replaceVariables(eventtext.spawnenemy, request);
+    mcCommander.say(text)
 })
 
 app.post('/effect', (req, res) => {
@@ -35,3 +36,23 @@ app.post('/changedifficulty', (req, res) => {
 app.listen(port, () => {
     console.log(`server listening on ${port}`)
 })
+
+function replaceVariables(string, request) {
+    const properties = Object.getOwnPropertyNames(request);
+
+    properties.forEach((property) =>{
+        if(typeof request[property] !== "object") {
+            string = string.replace(`@${property}`, request[property]);
+            console.log(property)
+        } else {
+            const innerProps = Object.getOwnPropertyNames(request[property]);
+            console.log("found object: " + innerProps)
+            innerProps.forEach((innerProp) => {
+                console.log(innerProp)
+                string = string.replace(`@${innerProp}`, request[property][innerProp]);
+            })
+        }
+    })
+
+    return string;
+}
