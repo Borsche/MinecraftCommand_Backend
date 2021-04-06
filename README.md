@@ -5,12 +5,13 @@
 requires a settings.json at the root directory  
 it should look like this  
 
-```{
+```
+{
     host: 'ip',
     port: port,
     password: 'password'
-}```  
-
+}
+```  
   
 Take a look at example.settings.json for an example
 
