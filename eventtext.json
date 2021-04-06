@@ -1,0 +1,7 @@
+{
+    "spawnenemy": "@user hat einen Gegner erscheinen lassen.",
+    "effect": "@user hat einen Effekt gewirkt.",
+    "playsound": "@user hat einen Sound abgespielt",
+    "camerashake": "@user bringt die Kamera zum wackeln",
+    "changedifficulty": "@user hat die Schwierigkeit geändert"
+}
