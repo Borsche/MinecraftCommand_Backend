@@ -54,22 +54,18 @@ export class MinecraftCommader {
         }
 
         let command = `execute @a[name=${player}] ~ ~ ~ summon ${mob} ~ ~1 ~`;
-        let requestStatus: RequestStatus = {
-            message: '',
-            success: false
-        };
-        await this.rcon.send(command).then(() => {
-            requestStatus = {
+
+        return this.rcon.send(command).then(() => {
+            return {
                 message: "successfully spawned!",
                 success: true
-            };
+            }
         }).catch((reason) => {
-            requestStatus = {
+            return {
                 message: "something went wrong: " + reason,
                 success: false
-            };
+            }
         });
-        return requestStatus;
     }
 
     public effect(request: EffectRequest){
