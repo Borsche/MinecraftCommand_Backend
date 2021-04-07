@@ -38,3 +38,9 @@ export interface RequestStatus {
     code: number,
     message: string,
 }
+
+export interface PlayerPosition {
+    x: number,
+    y: number,
+    z: number
+}

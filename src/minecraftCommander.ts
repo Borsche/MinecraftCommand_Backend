@@ -1,5 +1,5 @@
 import { Rcon } from 'rcon-client'
-import { CameraShakeRequest, ChangeDifficultyRequest, EffectRequest, PlaySoundRequest, RequestStatus, SpawnEnemyRequest } from './interface/request';
+import { CameraShakeRequest, ChangeDifficultyRequest, EffectRequest, PlayerPosition, PlaySoundRequest, RequestStatus, SpawnEnemyRequest } from './interface/request';
 import { Settings } from './interface/settings'
 import { Effects, Mobs, Sounds } from './options';
 
@@ -50,7 +50,15 @@ export class MinecraftCommader {
             };
         }
 
-        const command = `execute @a[name=${player}] ~ ~ ~ summon ${mob} ~ ~1 ~`;
+        const position = await this.getPlayerPosition(player);
+        if(!position) {
+            return {
+                message: "Could not locate the player",
+                code: 404
+            }
+        }
+
+        const command = `summon minecraft:${mob} ${position.x} ${position.y} ${position.z}`;
 
         return this.rcon.send(command).then(() => {
             return {
@@ -220,7 +228,12 @@ export class MinecraftCommader {
         return found
     }
 
-    private returnRdmInt(max){
+    private returnRdmInt(max: number){
         return Math.floor(Math.random() * max)
+    }
+
+    private async getPlayerPosition(player: string): Promise<PlayerPosition> {
+        const position = await this.rcon.send("ploc " + player);
+        return JSON.parse(position) as PlayerPosition
     }
 }
