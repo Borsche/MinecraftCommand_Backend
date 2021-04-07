@@ -12,13 +12,28 @@ mcCommander.connect(settings);
 
 app.post('/spawnenemy', (req, res) => {
     const request = req.body as Request;
-    mcCommander.spawnEnemy(request.payload as SpawnEnemyRequest);
+    const payload = request.payload as SpawnEnemyRequest
     const text = replaceVariables(eventtext.spawnenemy, request);
-    mcCommander.say(text)
+
+    const requestStatus = mcCommander.spawnEnemy(payload);
+
+    if(requestStatus.success) {
+        mcCommander.say(text)
+        res.status(200);
+        res.send(requestStatus.message);
+    } else {
+        res.status(404)
+        res.send(requestStatus.message);
+    }
 })
 
 app.post('/effect', (req, res) => {
+    const request = req.body as Request;
+    const payload = request.payload as EffectRequest
+    const text = replaceVariables(eventtext.effect, request);
 
+    mcCommander.effect(payload);
+    mcCommander.say(text);
 })
 
 app.post('/playsound', (req, res) => {

@@ -10,7 +10,6 @@ export interface RequestInfo {
 export interface SpawnEnemyRequest {
     player: string,
     entity: string,
-    distance: number
 }
 
 export interface EffectRequest {
@@ -31,4 +30,9 @@ export interface CameraShakeRequest {
 
 export interface ChangeDifficultyRequest {
     difficulty: string
+}
+
+export interface RequestStatus {
+    success: boolean,
+    message: string,
 }
