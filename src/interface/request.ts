@@ -1,6 +1,8 @@
+import { Mobs } from "../options";
+
 export interface Request {
     requestInfo: RequestInfo,
-    payload: SpawnEnemyRequest | EffectRequest
+    payload: SpawnEnemyRequest | EffectRequest | PlaySoundRequest | CameraShakeRequest | ChangeDifficultyRequest
 }
 
 export interface RequestInfo {

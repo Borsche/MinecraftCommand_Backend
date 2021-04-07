@@ -17,52 +17,59 @@ export class MinecraftCommader {
         });
     }
 
-    public spawnEnemy(request: SpawnEnemyRequest): RequestStatus{
+    public async spawnEnemy(request: SpawnEnemyRequest): Promise<RequestStatus>{
         // check if the player is defined or on the server
         let player;
         if(request.player && this.isPlayerOnServer(request.player)){
             player = request.player;
         } else if(!request.player) {
-            player = this.getRandomPlayerOnServer();
+            player = await this.getRandomPlayerOnServer()
         } else {
-            let requestStatus: RequestStatus;
-            requestStatus.message = "The request player is not on the server";
-            requestStatus.success = false;
+            let requestStatus: RequestStatus = {
+                message: "The request player is not on the server",
+                success: false
+            };
             return requestStatus;
         }
-        if(player) {
-            let requestStatus: RequestStatus;
-            requestStatus.message = "No players are currently on the server";
-            requestStatus.success = false;
+        if(!player) {
+            let requestStatus: RequestStatus = {
+                message: "No players are currently on the server",
+                success: false
+            };
             return requestStatus;
         }
 
         // check if the mob is assigned and exist in the predefined mobs enum
         let mob;
-        if(request.entity && request.entity in Mobs){
+        if(request.entity && this.existsIn(Mobs, request.entity)){
             mob = request.entity;
         } else if(!request.entity) {
             mob = this.getRandomMob();
         } else {
-            let requestStatus: RequestStatus;
-            requestStatus.message = "The requested entity is not in the list of available mobs";
-            requestStatus.success = false;
+            let requestStatus: RequestStatus = {
+                message: "The requested entity is not in the list of available mobs",
+                success: false
+            };
             return requestStatus;
         }
 
         let command = `execute @a[name=${player}] ~ ~ ~ summon ${mob} ~ ~1 ~`;
-        this.rcon.send(command).then(() => {
-            let requestStatus: RequestStatus;
-            requestStatus.message = "successfully spawned!";
-            requestStatus.success = true;
-            return requestStatus;
+        let requestStatus: RequestStatus = {
+            message: '',
+            success: false
+        };
+        await this.rcon.send(command).then(() => {
+            requestStatus = {
+                message: "successfully spawned!",
+                success: true
+            };
         }).catch((reason) => {
-            let requestStatus: RequestStatus;
-            requestStatus.message = "something went wrong: " + reason;
-            requestStatus.success = false;
-            return requestStatus;
+            requestStatus = {
+                message: "something went wrong: " + reason,
+                success: false
+            };
         });
-
+        return requestStatus;
     }
 
     public effect(request: EffectRequest){
@@ -98,7 +105,7 @@ export class MinecraftCommader {
 
     private async getRandomPlayerOnServer(): Promise<string> {
         const players = await this.getPlayersOnServer();
-        return players[Math.round(Math.random() * players.length)]
+        return players[this.returnRdmInt(players.length)]
     }
 
     private async isPlayerOnServer(player: string): Promise<boolean> {
@@ -107,6 +114,19 @@ export class MinecraftCommader {
     }
 
     private getRandomMob(): string {
-        return Mobs[Math.round(Math.random() * Object.keys(Mobs).length)]
+        const mobs = Object.values(Mobs);
+        return mobs[this.returnRdmInt(mobs.length)]
+    }
+
+    private existsIn(obj: any, value: any): boolean {
+        let found = false;
+        for(const val in obj) {
+            if(val == value) found = true 
+        }
+        return found
+    }
+
+    private returnRdmInt(max){
+        return Math.floor(Math.random() * max)
     }
 }
