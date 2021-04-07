@@ -4,7 +4,7 @@ import * as settings from "../settings.json";
 import * as eventtext from "../eventtext.json";
 import { MinecraftCommader } from './minecraftCommander';
 import { Request, SpawnEnemyRequest, EffectRequest, PlaySoundRequest, CameraShakeRequest, ChangeDifficultyRequest } from './interface/request';
-import { Mobs } from './options';
+import { Effects, Mobs, Sounds } from './options';
 
 
 
@@ -47,7 +47,17 @@ app.post('/effect', (req, res) => {
 })
 
 app.post('/playsound', (req, res) => {
+    const request = req.body as Request;
+    const payload = request.payload as PlaySoundRequest
+    const text = replaceVariables(eventtext.playsound, request);
 
+    mcCommander.playSound(payload).then((requestStatus) => {
+        if(requestStatus.code == 200) {
+            mcCommander.say(text)
+        }
+        res.status(requestStatus.code);
+        res.send(requestStatus.message);
+    })
 })
 
 app.post('/camerashake', (req, res) => {
@@ -65,7 +75,15 @@ app.get('/players', (req, res) => {
 })
 
 app.get('/mobs', (req, res) => {
-    res.send(Object.values(Mobs));
+    res.send(Object.keys(Mobs));
+})
+
+app.get('/effects', (req, res) => {
+    res.send(Object.keys(Effects));
+})
+
+app.get('/sounds', (req, res) => {
+    res.send(Object.keys(Sounds));
 })
 
 app.listen(port, () => {

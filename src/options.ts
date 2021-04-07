@@ -21,3 +21,11 @@ export enum Effects {
     Weakness = 'weakness',
     Wither = 'wither'
 }
+
+export enum Sounds {
+    Anvil = 'block.anvil.hit',
+    Ghast = 'ghast.shoot',
+    Spider = 'spider.ambient',
+    Witch = 'witch.ambient',
+    Explosion = 'entity.generic.explode',
+}

@@ -1,7 +1,7 @@
 import { Rcon } from 'rcon-client'
 import { CameraShakeRequest, ChangeDifficultyRequest, EffectRequest, PlaySoundRequest, RequestStatus, SpawnEnemyRequest } from './interface/request';
 import { Settings } from './interface/settings'
-import { Effects, Mobs } from './options';
+import { Effects, Mobs, Sounds } from './options';
 
 export class MinecraftCommader {
 
@@ -40,7 +40,7 @@ export class MinecraftCommader {
         // check if the mob is assigned and exist in the predefined mobs enum
         let mob;
         if(request.entity && this.existsIn(Mobs, request.entity)){
-            mob = request.entity;
+            mob = Mobs[request.entity];
         } else if(!request.entity) {
             mob = this.getRandomMob();
         } else {
@@ -86,7 +86,7 @@ export class MinecraftCommader {
 
         let effect;
         if(request.effect && this.existsIn(Effects, request.effect)) {
-            effect = request.effect;
+            effect = Effects[request.effect];
         } else if(!request.effect) {
             effect = this.getRandomEffect();
         } else {
@@ -118,8 +118,50 @@ export class MinecraftCommader {
         })
     }   
 
-    public playSound(request: PlaySoundRequest) {
+    public async playSound(request: PlaySoundRequest): Promise<RequestStatus>{
+        let player;
+        if(request.player && this.isPlayerOnServer(request.player)){
+            player = request.player;
+        } else if(!request.player) {
+            player = await this.getRandomPlayerOnServer()
+        } else {
+            return {
+                message: "The request player is not on the server",
+                code: 404
+            };
+        }
+        if(!player) {
+            return {
+                message: "No players are currently on the server",
+                code: 404
+            };
+        }
 
+        let sound;
+        if(request.sound && this.existsIn(Sounds, request.sound)){
+            sound = Sounds[request.sound];
+        } else if(!request.sound) {
+            sound = this.getRandomSound();
+        } else {
+            return {
+                message: "The requested effect is not in the list of available effects",
+                code: 404
+            };
+        }
+
+        const command = `playsound minecraft:${sound.toLowerCase()} ambient ${player}`
+
+        return this.rcon.send(command).then(() => {
+            return {
+                message: "successfully applied effect",
+                code: 200
+            }
+        }).catch((reason) => {
+            return {
+                message: "something went wrong: " + reason,
+                code: 500
+            }
+        })
     }
 
     public camerashake(request: CameraShakeRequest) {
@@ -163,6 +205,11 @@ export class MinecraftCommader {
     private getRandomEffect(): string {
         const effects = Object.values(Effects);
         return effects[this.returnRdmInt(effects.length)]
+    }
+
+    private getRandomSound(): string {
+        const sounds = Object.values(Sounds);
+        return sounds[this.returnRdmInt(sounds.length)]
     }
 
     private existsIn(obj: any, value: any): boolean {
