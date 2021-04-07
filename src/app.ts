@@ -4,6 +4,7 @@ import * as settings from "../settings.json";
 import * as eventtext from "../eventtext.json";
 import { MinecraftCommader } from './minecraftCommander';
 import { Request, SpawnEnemyRequest, EffectRequest, PlaySoundRequest, CameraShakeRequest, ChangeDifficultyRequest } from './interface/request';
+import { Mobs } from './options';
 
 
 
@@ -53,6 +54,16 @@ app.post('/camerashake', (req, res) => {
 
 app.post('/changedifficulty', (req, res) => {
 
+})
+
+app.get('/players', (req, res) => {
+    mcCommander.getPlayersOnServer().then((players) => {
+        res.send(players);
+    })
+})
+
+app.get('/mobs', (req, res) => {
+    res.send(Object.values(Mobs));
 })
 
 app.listen(port, () => {

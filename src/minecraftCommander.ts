@@ -66,7 +66,7 @@ export class MinecraftCommader {
     }
 
     public effect(request: EffectRequest){
-
+        
     }
 
     public playSound(request: PlaySoundRequest) {
