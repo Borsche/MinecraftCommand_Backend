@@ -1,7 +1,7 @@
 import { Rcon } from 'rcon-client'
 import { CameraShakeRequest, ChangeDifficultyRequest, EffectRequest, PlaySoundRequest, RequestStatus, SpawnEnemyRequest } from './interface/request';
 import { Settings } from './interface/settings'
-import { Mobs } from './options';
+import { Effects, Mobs } from './options';
 
 export class MinecraftCommader {
 
@@ -50,7 +50,7 @@ export class MinecraftCommader {
             };
         }
 
-        let command = `execute @a[name=${player}] ~ ~ ~ summon ${mob} ~ ~1 ~`;
+        const command = `execute @a[name=${player}] ~ ~ ~ summon ${mob} ~ ~1 ~`;
 
         return this.rcon.send(command).then(() => {
             return {
@@ -65,9 +65,58 @@ export class MinecraftCommader {
         });
     }
 
-    public effect(request: EffectRequest){
-        
-    }
+    public async effect(request: EffectRequest): Promise<RequestStatus>{
+        let player;
+        if(request.player && this.isPlayerOnServer(request.player)){
+            player = request.player;
+        } else if(!request.player) {
+            player = await this.getRandomPlayerOnServer()
+        } else {
+            return {
+                message: "The request player is not on the server",
+                success: false
+            };
+        }
+        if(!player) {
+            return {
+                message: "No players are currently on the server",
+                success: false
+            };
+        }
+
+        let effect;
+        if(request.effect && this.existsIn(Effects, request.effect)) {
+            effect = request.effect;
+        } else if(!request.effect) {
+            effect = this.getRandomEffect();
+        } else {
+            return {
+                message: "The requested effect is not in the list of available effects",
+                success: false
+            };
+        }
+
+        let duration;
+        if(request.duration && request.duration >= 0) {
+            duration = request.duration;
+        } else {
+            duration = 60;
+        }
+
+        const command = `effect give ${player} minecraft:${effect.toLowerCase()} ${duration}`
+
+        return this.rcon.send(command).then(() => {
+            return {
+                message: "successfully applied effect",
+                success: true
+            }
+        }).catch((reason) => {
+            return {
+                message: "something went wrong: " + reason,
+                success: false
+            }
+        })
+    }   
 
     public playSound(request: PlaySoundRequest) {
 
@@ -111,10 +160,15 @@ export class MinecraftCommader {
         return mobs[this.returnRdmInt(mobs.length)]
     }
 
+    private getRandomEffect(): string {
+        const effects = Object.values(Effects);
+        return effects[this.returnRdmInt(effects.length)]
+    }
+
     private existsIn(obj: any, value: any): boolean {
         let found = false;
         for(const val in obj) {
-            if(val == value) found = true 
+            if(val.toLowerCase() == value.toLowerCase()) found = true 
         }
         return found
     }

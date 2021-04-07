@@ -40,7 +40,9 @@ app.post('/effect', (req, res) => {
     const payload = request.payload as EffectRequest
     const text = replaceVariables(eventtext.effect, request);
 
-    mcCommander.effect(payload);
+    mcCommander.effect(payload).then((requestStatus) => {
+        res.send(requestStatus.message);
+    });
     mcCommander.say(text);
 })
 

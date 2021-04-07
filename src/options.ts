@@ -9,3 +9,15 @@ export enum Mobs {
     Witch = 'witch',
     Phantom = 'phantom'
 }
+
+export enum Effects {
+    Blindness = 'blindness',
+    Hunger = 'hunger',
+    Mining_Fatigue = "mining_fatigue",
+    Nausea = 'nausea',
+    Poison = 'poison',
+    Slowness = 'slowness',
+    Unluck = 'unluck',
+    Weakness = 'weakness',
+    Wither = 'wither'
+}
