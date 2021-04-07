@@ -27,13 +27,13 @@ export class MinecraftCommader {
         } else {
             return {
                 message: "The request player is not on the server",
-                success: false
+                code: 404
             };
         }
         if(!player) {
             return {
                 message: "No players are currently on the server",
-                success: false
+                code: 404
             };
         }
 
@@ -46,7 +46,7 @@ export class MinecraftCommader {
         } else {
             return {
                 message: "The requested entity is not in the list of available mobs",
-                success: false
+                code: 404
             };
         }
 
@@ -55,12 +55,12 @@ export class MinecraftCommader {
         return this.rcon.send(command).then(() => {
             return {
                 message: "successfully spawned!",
-                success: true
+                code: 200
             }
         }).catch((reason) => {
             return {
                 message: "something went wrong: " + reason,
-                success: false
+                code: 500
             }
         });
     }
@@ -74,13 +74,13 @@ export class MinecraftCommader {
         } else {
             return {
                 message: "The request player is not on the server",
-                success: false
+                code: 404
             };
         }
         if(!player) {
             return {
                 message: "No players are currently on the server",
-                success: false
+                code: 404
             };
         }
 
@@ -92,7 +92,7 @@ export class MinecraftCommader {
         } else {
             return {
                 message: "The requested effect is not in the list of available effects",
-                success: false
+                code: 404
             };
         }
 
@@ -108,12 +108,12 @@ export class MinecraftCommader {
         return this.rcon.send(command).then(() => {
             return {
                 message: "successfully applied effect",
-                success: true
+                code: 200
             }
         }).catch((reason) => {
             return {
                 message: "something went wrong: " + reason,
-                success: false
+                code: 500
             }
         })
     }   

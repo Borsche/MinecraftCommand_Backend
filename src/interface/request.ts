@@ -35,6 +35,6 @@ export interface ChangeDifficultyRequest {
 }
 
 export interface RequestStatus {
-    success: boolean,
+    code: number,
     message: string,
 }

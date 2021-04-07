@@ -24,14 +24,11 @@ app.post('/spawnenemy', (req, res) => {
     const text = replaceVariables(eventtext.spawnenemy, request);
 
     mcCommander.spawnEnemy(payload).then((requestStatus) => {
-        if(requestStatus.success) {
+        if(requestStatus.code == 200) {
             mcCommander.say(text)
-            res.status(200);
-            res.send(requestStatus.message);
-        } else {
-            res.status(404)
-            res.send(requestStatus.message);
         }
+        res.status(requestStatus.code);
+        res.send(requestStatus.message);
     });
 })
 
@@ -41,9 +38,12 @@ app.post('/effect', (req, res) => {
     const text = replaceVariables(eventtext.effect, request);
 
     mcCommander.effect(payload).then((requestStatus) => {
+        if(requestStatus.code == 200) {
+            mcCommander.say(text)
+        }
+        res.status(requestStatus.code);
         res.send(requestStatus.message);
     });
-    mcCommander.say(text);
 })
 
 app.post('/playsound', (req, res) => {
