@@ -144,7 +144,7 @@ export class MinecraftCommader {
             sound = this.getRandomSound();
         } else {
             return {
-                message: "The requested effect is not in the list of available effects",
+                message: "The requested sound is not in the list of available sounds",
                 code: 404
             };
         }
@@ -153,7 +153,7 @@ export class MinecraftCommader {
 
         return this.rcon.send(command).then(() => {
             return {
-                message: "successfully applied effect",
+                message: "successfully applied sound",
                 code: 200
             }
         }).catch((reason) => {
