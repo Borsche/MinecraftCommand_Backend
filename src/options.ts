@@ -29,3 +29,10 @@ export enum Sounds {
     Witch = 'witch.ambient',
     Explosion = 'entity.generic.explode',
 }
+
+export enum Difficulties {
+    Hard = 'hard',
+    Easy = 'easy',
+    Normal = 'normal',
+    Peaceful = "peaceful"
+}

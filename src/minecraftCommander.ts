@@ -1,7 +1,7 @@
 import { Rcon } from 'rcon-client'
-import { CameraShakeRequest, ChangeDifficultyRequest, EffectRequest, PlayerPosition, PlaySoundRequest, RequestStatus, SpawnEnemyRequest } from './interface/request';
+import { ChangeDifficultyRequest, EffectRequest, PlayerPosition, PlaySoundRequest, RequestStatus, SpawnEnemyRequest } from './interface/request';
 import { Settings } from './interface/settings'
-import { Effects, Mobs, Sounds } from './options';
+import { Difficulties, Effects, Mobs, Sounds } from './options';
 
 export class MinecraftCommader {
 
@@ -172,8 +172,38 @@ export class MinecraftCommader {
         })
     }
 
-    public changeDifficulty(request: ChangeDifficultyRequest) {
-        
+    public async changeDifficulty(request: ChangeDifficultyRequest): Promise<RequestStatus> {
+        let difficulty;
+        if(request.difficulty && this.existsIn(Difficulties, request.difficulty)){
+            difficulty = Difficulties[request.difficulty];
+        } else if(!request.difficulty) {
+            difficulty = this.getRandomDifficulty();
+        } else {
+            return {
+                message: "The requested difficulty is not in the list of available difficulties",
+                code: 404
+            };
+        }
+
+        if(difficulty == await this.getCurrentDifficulty()) {
+            return {
+                message: "The difficulty is already " + difficulty,
+                code: 400
+            };
+        }
+
+        const command = `difficulty ${difficulty}`;
+        return this.rcon.send(command).then(() => {
+            return {
+                message: "successfully changed difficulty",
+                code: 200
+            }
+        }).catch((reason) => {
+            return {
+                message: "something went wrong: " + reason,
+                code: 500
+            }
+        })
     }
 
     public say(text:string) {
@@ -216,6 +246,16 @@ export class MinecraftCommader {
         return sounds[this.returnRdmInt(sounds.length)]
     }
 
+    private getRandomDifficulty() {
+        const difficulty = Object.values(Difficulties);
+        const currentDifficulty = this.getCurrentDifficulty()
+        let randomDifficulty;
+        do
+            randomDifficulty = difficulty[this.returnRdmInt(difficulty.length)]
+        while (randomDifficulty == currentDifficulty)
+        return randomDifficulty;
+    }
+
     private existsIn(obj: any, value: any): boolean {
         let found = false;
         for(const val in obj) {
@@ -231,5 +271,12 @@ export class MinecraftCommader {
     private async getPlayerPosition(player: string): Promise<PlayerPosition> {
         const position = await this.rcon.send("ploc " + player);
         return JSON.parse(position) as PlayerPosition
+    }
+
+    private async getCurrentDifficulty(): Promise<String> {
+        const diffString = await this.rcon.send("difficulty");
+        const diffStringWords = diffString.split(" ");
+        
+        return diffStringWords[diffStringWords.length - 1].toLocaleLowerCase()
     }
 }

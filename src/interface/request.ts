@@ -2,7 +2,7 @@ import { Mobs } from "../options";
 
 export interface Request {
     requestInfo: RequestInfo,
-    payload: SpawnEnemyRequest | EffectRequest | PlaySoundRequest | CameraShakeRequest | ChangeDifficultyRequest
+    payload: SpawnEnemyRequest | EffectRequest | PlaySoundRequest | ChangeDifficultyRequest
 }
 
 export interface RequestInfo {
@@ -23,11 +23,6 @@ export interface EffectRequest {
 export interface PlaySoundRequest {
     player: string,
     sound: string,
-}
-
-export interface CameraShakeRequest {
-    player: string,
-    duration: number
 }
 
 export interface ChangeDifficultyRequest {

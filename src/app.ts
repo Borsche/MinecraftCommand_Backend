@@ -3,8 +3,8 @@ import bodyParser from 'body-parser';
 import * as settings from "../settings.json";
 import * as eventtext from "../eventtext.json";
 import { MinecraftCommader } from './minecraftCommander';
-import { Request, SpawnEnemyRequest, EffectRequest, PlaySoundRequest, CameraShakeRequest, ChangeDifficultyRequest } from './interface/request';
-import { Effects, Mobs, Sounds } from './options';
+import { Request, SpawnEnemyRequest, EffectRequest, PlaySoundRequest, ChangeDifficultyRequest } from './interface/request';
+import { Difficulties, Effects, Mobs, Sounds } from './options';
 
 
 
@@ -60,12 +60,18 @@ app.post('/playsound', (req, res) => {
     })
 })
 
-app.post('/camerashake', (req, res) => {
-
-})
-
 app.post('/changedifficulty', (req, res) => {
+    const request = req.body as Request;
+    const payload = request.payload as ChangeDifficultyRequest
+    const text = replaceVariables(eventtext.changedifficulty, request);
 
+    mcCommander.changeDifficulty(payload).then((requestStatus) => {
+        if(requestStatus.code == 200) {
+            mcCommander.say(text)
+        }
+        res.status(requestStatus.code);
+        res.send(requestStatus.message);
+    })
 })
 
 app.get('/players', (req, res) => {
@@ -84,6 +90,10 @@ app.get('/effects', (req, res) => {
 
 app.get('/sounds', (req, res) => {
     res.send(Object.keys(Sounds));
+})
+
+app.get('/difficulties', (req, res) => {
+    res.send(Object.keys(Difficulties));
 })
 
 app.listen(port, () => {
