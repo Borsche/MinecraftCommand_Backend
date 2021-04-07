@@ -172,12 +172,8 @@ export class MinecraftCommader {
         })
     }
 
-    public camerashake(request: CameraShakeRequest) {
-
-    }
-
     public changeDifficulty(request: ChangeDifficultyRequest) {
-
+        
     }
 
     public say(text:string) {
