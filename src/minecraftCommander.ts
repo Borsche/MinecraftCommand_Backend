@@ -25,18 +25,16 @@ export class MinecraftCommader {
         } else if(!request.player) {
             player = await this.getRandomPlayerOnServer()
         } else {
-            let requestStatus: RequestStatus = {
+            return {
                 message: "The request player is not on the server",
                 success: false
             };
-            return requestStatus;
         }
         if(!player) {
-            let requestStatus: RequestStatus = {
+            return {
                 message: "No players are currently on the server",
                 success: false
             };
-            return requestStatus;
         }
 
         // check if the mob is assigned and exist in the predefined mobs enum
@@ -46,11 +44,10 @@ export class MinecraftCommader {
         } else if(!request.entity) {
             mob = this.getRandomMob();
         } else {
-            let requestStatus: RequestStatus = {
+            return {
                 message: "The requested entity is not in the list of available mobs",
                 success: false
             };
-            return requestStatus;
         }
 
         let command = `execute @a[name=${player}] ~ ~ ~ summon ${mob} ~ ~1 ~`;
